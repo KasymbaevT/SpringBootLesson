@@ -1,6 +1,7 @@
 package peaksoft.springbootlesson.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import peaksoft.springbootlesson.dto.UserRequest;
@@ -17,11 +18,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserResponse create(UserRequest request){
+    public UserResponse create(UserRequest request) {
         User user = new User();
         user.setUsername(request.getUsername());
+        user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -30,31 +32,36 @@ public class UserService {
         userRepository.save(user);
         return mapToResponse(user);
     }
-    public UserResponse mapToResponse(User user){
-      return UserResponse.builder()
+
+    public UserResponse mapToResponse(User user) {
+        return UserResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
+                .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .roleName(user.getRole().name())
                 .localDate(user.getLocalDate()).build();
 
     }
-    public List<UserResponse> getAll(){
+
+    public List<UserResponse> getAll() {
         List<UserResponse> userResponses = new ArrayList<>();
         for (User user : userRepository.findAll()) {
             userResponses.add(mapToResponse(user));
         }
         return userResponses;
     }
-    public UserResponse getUserById(Long userId){
+
+    public UserResponse getUserById(Long userId) {
         User user = userRepository.findById(userId).get();
         return mapToResponse(user);
     }
 
-    public UserResponse update(Long userId,UserRequest request){
+    public UserResponse update(Long userId, UserRequest request) {
         User user = userRepository.findById(userId).get();
         user.setUsername(request.getUsername());
+        user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -62,9 +69,10 @@ public class UserService {
         userRepository.save(user);
         return mapToResponse(user);
     }
-    public String delete(Long userId){
+
+    public String delete(Long userId) {
         userRepository.deleteById(userId);
-        return "Successfully deleted user with id: "+userId;
+        return "Successfully deleted user with id: " + userId;
     }
 
 

@@ -26,6 +26,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
+    private String firstName;
     private String lastName;
     private String email;
     private String password;
@@ -38,7 +39,7 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(role.getAuthority()));
-        return null;
+        return authorities;
     }
 
     @Override
